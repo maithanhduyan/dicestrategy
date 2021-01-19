@@ -529,9 +529,8 @@ namespace Dice.Sample.Bot
                         case 2: basebet = 1310.72M; break;
                         case 3: basebet = 10485.76M; break;
                         case 4:
-                            basebet = 20000M;
-                            onRestart = 7;
-                            //Console.Beep() ; Console.Beep(); Console.Beep(); Console.Beep(); Console.Beep();
+                            basebet = 64000M;
+                            Console.Beep() ; Console.Beep(); Console.Beep();
                             //MessageBox.Show("Loss 4 Reached");
                             break;
                         case 5:
@@ -540,7 +539,8 @@ namespace Dice.Sample.Bot
                         case 6:
                             MessageBox.Show("Case 6");
                             break;
-                        default: MessageBox.Show("Strategy reached on default."); BettingInProgress = false; break;
+                        default: MessageBox.Show("Strategy reached on default.");  
+                            break;
 
                     }
                 }

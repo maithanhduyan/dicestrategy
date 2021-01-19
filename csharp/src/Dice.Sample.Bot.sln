@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dice.Sample.Bot", "Dice.Sample.Bot.csproj", "{43043EEB-333E-4B30-AFF3-C823AB6CF298}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dice.Sample.Bot", "DiceBot\Dice.Sample.Bot.csproj", "{43043EEB-333E-4B30-AFF3-C823AB6CF298}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerifyBetResult", "VerifyBetResult\VerifyBetResult.csproj", "{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,12 @@ Global
 		{43043EEB-333E-4B30-AFF3-C823AB6CF298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43043EEB-333E-4B30-AFF3-C823AB6CF298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43043EEB-333E-4B30-AFF3-C823AB6CF298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Debug x64|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Debug x64|Any CPU.Build.0 = Debug|Any CPU
+		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
