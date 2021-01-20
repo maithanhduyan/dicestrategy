@@ -25,14 +25,14 @@ namespace VerifyBetResult
             int clienSeed = int.Parse(txtClientSeed.Text.Trim());
             int betNumber = int.Parse(txtBetNumber.Text.Trim());
             long betResult = long.Parse(txtBetResult.Text.Trim());
-            bool fairBet = VerifyBetResult(serverSeed, clienSeed, betNumber, betResult, null);
-            long result = CalculateBetResult(serverSeed, clienSeed);
-            lblCalculateBetResult.Text = "Bet Result: "+result;
+            string serverSeedHash = txtServerSeedHash.Text.Trim();
+            bool fairBet = VerifyBetResult(serverSeed, clienSeed, betNumber, betResult, serverSeedHash);
             if (fairBet)
             {
                 MessageBox.Show("True");
             }
-            else {
+            else
+            {
                 MessageBox.Show("Not Fair");
             }
         }
@@ -62,31 +62,32 @@ namespace VerifyBetResult
                     {
                         long result = (hash[x] << 16) | (hash[x + 1] << 8) | hash[x + 2];
                         if (result < 16000000)
-                            Console.WriteLine(""+ (result % 1000000));
-                            return result % 1000000 == betResult;
+                            Console.WriteLine("" + (result % 1000000));
+                        return result % 1000000 == betResult;
                     }
                     hash = sha512.ComputeHash(hash);
                 }
             }
         }
 
-        long CalculateBetResult(string serverSeed, int clientSeed) {
+        long CalculateBetResult(string serverSeed, int clientSeed)
+        {
             Func<string, byte[]> strtobytes = s => Enumerable
                 .Range(0, s.Length / 2)
                 .Select(x => byte.Parse(s.Substring(x * 2, 2), NumberStyles.HexNumber))
                 .ToArray();
+
             byte[] server = strtobytes(serverSeed);
             byte[] client = BitConverter.GetBytes(clientSeed).Reverse().ToArray();
-            byte[] serverhash = strtobytes("5ecf14c84bba227f6108976a735fd6faddce2ca1a1f068d4c3023ee3f2f7a0e9");
-            byte[] num = BitConverter.GetBytes(94999).Reverse().ToArray();
+
+            // First Number = 0
+            byte[] num = BitConverter.GetBytes(0).Reverse().ToArray();
+
+            // ServerSeed + ClientSeed + NONCE (Sequences number)
             byte[] data = server.Concat(client).Concat(num).ToArray();
 
             using (SHA512 sha512 = new SHA512Managed())
             {
-                if (serverhash != null)
-                    using (SHA256 sha256 = new SHA256Managed())
-                        if (!sha256.ComputeHash(server).SequenceEqual(serverhash))
-                            throw new Exception("Server seed hash does not match server seed");
                 byte[] hash = sha512.ComputeHash(sha512.ComputeHash(data));
                 while (true)
                 {
@@ -95,11 +96,17 @@ namespace VerifyBetResult
                         long result = (hash[x] << 16) | (hash[x + 1] << 8) | hash[x + 2];
                         if (result < 16000000)
                             Console.WriteLine("Bet Result: " + (result % 1000000));
-                        return result % 1000000 ;
+                        return result % 1000000;
                     }
                     hash = sha512.ComputeHash(hash);
                 }
             }
+        }
+
+        private void lblCalculateBetResult_Click(object sender, EventArgs e)
+        {
+            long betResult = CalculateBetResult(txtServerSeed.Text.Trim(), int.Parse(txtClientSeed.Text.Trim()));
+            lblCalculateBetResult.Text = "" + betResult;
         }
     }
 }
