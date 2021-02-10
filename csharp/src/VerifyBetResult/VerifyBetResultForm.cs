@@ -45,6 +45,8 @@ namespace VerifyBetResult
                 .Select(x => byte.Parse(s.Substring(x * 2, 2), NumberStyles.HexNumber))
                 .ToArray();
             byte[] server = strtobytes(serverSeed);
+            Console.WriteLine(server.Length);
+            Console.WriteLine(server);
             byte[] client = BitConverter.GetBytes(clientSeed).Reverse().ToArray();
             byte[] num = BitConverter.GetBytes(betNumber).Reverse().ToArray();
             byte[] serverhash = serverSeedHash == null ? null : strtobytes(serverSeedHash);

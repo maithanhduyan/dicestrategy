@@ -697,7 +697,7 @@
             this.textBox_MaxBet.Name = "textBox_MaxBet";
             this.textBox_MaxBet.Size = new System.Drawing.Size(100, 22);
             this.textBox_MaxBet.TabIndex = 1;
-            this.textBox_MaxBet.Text = "0.04";
+            this.textBox_MaxBet.Text = "0.08";
             this.textBox_MaxBet.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox_MaxBet.TextChanged += new System.EventHandler(this.OptionChanged);
             // 

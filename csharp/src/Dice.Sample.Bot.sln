@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dice.Sample.Bot", "DiceBot\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerifyBetResult", "VerifyBetResult\VerifyBetResult.csproj", "{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataPresentationAnalysis", "DataPresentationAnalysis\DataPresentationAnalysis.csproj", "{6B660116-9F5A-498B-A26F-35D4159EC3FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug x64|Any CPU = Debug x64|Any CPU
@@ -26,6 +28,12 @@ Global
 		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Debug x64|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Debug x64|Any CPU.Build.0 = Debug|Any CPU
+		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

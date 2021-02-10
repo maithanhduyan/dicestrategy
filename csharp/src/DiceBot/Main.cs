@@ -25,7 +25,7 @@ namespace Dice.Sample.Bot
         readonly System.Windows.Forms.Timer BalanceTimer = new System.Windows.Forms.Timer() { Interval = 1000 * 60 };
         bool BettingInProgress;
         readonly object LogFileLock = new object();
-        StreamWriter LogFile;        
+        StreamWriter LogFile;
 
         string LogFileName { get { return Path.Combine(Settings.DataFileDirectory, Session.AccountId.ToString() + " Bets.txt"); } }
 
@@ -65,7 +65,7 @@ namespace Dice.Sample.Bot
             BeginInvoke((Action)(() =>
             {
                 if (e == null || e.PropertyName == "Balance")
-                    label_Balance.Text = Session[Currency].Balance.ToString() + " "+Currency.ToString();
+                    label_Balance.Text = Session[Currency].Balance.ToString() + " " + Currency.ToString();
                 if (e == null ||
                     e.PropertyName == "BetCount" ||
                     e.PropertyName == "BetPayIn" ||
@@ -193,7 +193,8 @@ namespace Dice.Sample.Bot
             startBet();
         }
 
-        void startBet() {
+        void startBet()
+        {
             if (BettingInProgress)
             {
                 BettingInProgress = false;
@@ -367,12 +368,14 @@ namespace Dice.Sample.Bot
                     .Select(x => new
                     {
                         id = result.BetIds[x],
+                        serverSeed = result.ServerSeed,
+                        clientSeed  = settings.ClientSeed,
                         endbal = tmpbal += result.PayIns[x] + result.PayOuts[x],
                         payin = result.PayIns[x],
                         payout = result.PayOuts[x],
                         secret = result.Secrets[x]
                     })
-                    .Select(x => string.Join(",", x.id, x.endbal - (x.payin + x.payout), x.payin, guessLow, guessHigh, x.secret, x.payout, x.endbal))));
+                    .Select(x => string.Join(",", x.id, x.serverSeed, x.clientSeed, x.endbal - (x.payin + x.payout), x.payin, guessLow, guessHigh, x.secret, x.payout, x.endbal))));
 
                 if (stopMaxBalance > 0 && Session[Currency].Balance >= stopMaxBalance)
                 {
@@ -417,9 +420,9 @@ namespace Dice.Sample.Bot
                                 BettingInProgress = false;
                                 Console.WriteLine("Max Bet Reach.");
                                 //Console.Beep();
-                                
+
                                 // x1 Run my strategy...
-                                runStrategyAsync(Session,guessLow, guessHigh, rnd.Next(), Currency);
+                                runStrategyAsync(Session, guessLow, guessHigh, rnd.Next(), Currency);
 
                                 break;
                             }
@@ -431,7 +434,8 @@ namespace Dice.Sample.Bot
                     lastPayIn = decimal.Round(lastPayIn, 8);
                     if (maxBet != 0 && lastPayIn < maxBet)
                         lastPayIn = maxBet;
-                    var single = await DiceWebAPI.PlaceBetAsync(Session, lastPayIn, guessLow, guessHigh, rnd.Next(), Currency);
+                    int clientSeed = rnd.Next();
+                    var single = await DiceWebAPI.PlaceBetAsync(Session, lastPayIn, guessLow, guessHigh, clientSeed, Currency);
                     if (!single.Success)
                     {
                         BettingInProgress = false;
@@ -444,7 +448,7 @@ namespace Dice.Sample.Bot
                         }));
                         break;
                     }
-                    LogBets(string.Join(",", single.BetId, single.StartingBalance, lastPayIn, guessLow, guessHigh, single.Secret, single.PayOut, single.StartingBalance + lastPayIn + single.PayOut));
+                    LogBets(string.Join(",", single.BetId, single.ServerSeed, clientSeed, single.StartingBalance, lastPayIn, guessLow, guessHigh, single.Secret, single.PayOut, single.StartingBalance + lastPayIn + single.PayOut));
                     --betCount;
                     if (stopMaxBalance > 0 && Session[Currency].Balance >= stopMaxBalance)
                     {
@@ -465,7 +469,7 @@ namespace Dice.Sample.Bot
                     bool existed = File.Exists(LogFileName);
                     LogFile = File.AppendText(LogFileName);
                     if (!existed)
-                        LogFile.WriteLine("Bet ID,Starting Balance,Amount,Guess Low,Guess High,Bet Result,Payout,Ending Balance");
+                        LogFile.WriteLine("Bet ID,ServerSeed,ClientSeed,Starting Balance,Amount,Guess Low,Guess High,Bet Result,Payout,Ending Balance");
                     BeginInvoke((Action)(() => { button_ExportToCSV.Visible = true; }));
                 }
                 LogFile.WriteLine(text);
@@ -502,35 +506,39 @@ namespace Dice.Sample.Bot
 
         async Task<PlaceBetResponse> doSingleBetAsync(SessionInfo session, decimal payIn, long guessLow, long guessHigh, int randNumber, Currencies currency)
         {
-            return  await DiceWebAPI.PlaceBetAsync(session, payIn, guessLow, guessHigh, randNumber, currency);
+            return await DiceWebAPI.PlaceBetAsync(session, payIn, guessLow, guessHigh, randNumber, currency);
         }
 
-        async Task runStrategyAsync(SessionInfo session,  long guessLow, long guessHigh, int randNumber, Currencies currency) {
+        async Task runStrategyAsync(SessionInfo session, long guessLow, long guessHigh, int randNumber, Currencies currency)
+        {
             decimal basebet = 20.48M;
             bool isStrategyRunning = true;
             int betCount = 0; // Countint bet strategy
-            int onLoss = 0; 
+            int onLoss = 0;
             int onRestart = 3; // Stop this strategy's betting when win 3 times
             PlaceBetResponse betReponse;
             Console.WriteLine("Run 95% strategy x3, 3 times...");
 
-            while (isStrategyRunning) { 
-                betReponse = await DiceWebAPI.PlaceBetAsync(session, basebet,  guessLow, guessHigh, randNumber, currency);
+            while (isStrategyRunning)
+            {
+                betReponse = await DiceWebAPI.PlaceBetAsync(session, basebet, guessLow, guessHigh, randNumber, currency);
                 LogBets(string.Join(",", betReponse.BetId, betReponse.StartingBalance, basebet, guessLow, guessHigh, betReponse.Secret, betReponse.PayOut, betReponse.StartingBalance + basebet + betReponse.PayOut));
-                
-                Console.WriteLine(DateTime.Now + ": Balance: "+betReponse.StartingBalance + ". Base Bet: " + basebet + ". OnLossCount: " + onLoss + ". Betting: x"+ betCount+"");
+
+                Console.WriteLine(DateTime.Now + ": Balance: " + betReponse.StartingBalance + ". Base Bet: " + basebet + ". OnLossCount: " + onLoss + ". Betting: x" + betCount + "");
                 betCount++;
-                if (betReponse.Success && betReponse.PayOut == 0) {
+                if (betReponse.Success && betReponse.PayOut == 0)
+                {
                     // OnLoss
                     onLoss++;
                     betCount = 0;
-                    switch (onLoss) {
+                    switch (onLoss)
+                    {
                         case 1: basebet = 163.84M; break;
                         case 2: basebet = 1310.72M; break;
                         case 3: basebet = 10485.76M; break;
                         case 4:
-                            basebet = 64000M;
-                            Console.Beep() ; Console.Beep(); Console.Beep();
+                            //basebet = 64000M;
+                            Console.Beep(); Console.Beep(); Console.Beep();
                             //MessageBox.Show("Loss 4 Reached");
                             break;
                         case 5:
@@ -539,21 +547,23 @@ namespace Dice.Sample.Bot
                         case 6:
                             MessageBox.Show("Case 6");
                             break;
-                        default: MessageBox.Show("Strategy reached on default.");  
+                        default:
+                            MessageBox.Show("Strategy reached on default.");
                             break;
 
                     }
                 }
 
                 // stop strategy when betCount = onRestart 
-                if (betCount == onRestart) {
+                if (betCount == onRestart)
+                {
                     isStrategyRunning = false;
                     Console.WriteLine(DateTime.Now + ": End strategy ./.");
                     startBet();
                 }
             }
-            
+
         }
-        
+
     }
 }
