@@ -1,4 +1,7 @@
 ﻿using Dice.Client.Web;
+using Dice.Sample.Bot.DB;
+using Dice.Sample.Bot.Model;
+using Dice.Sample.Bot.Repository;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,8 +16,15 @@ using System.Windows.Forms;
 
 namespace Dice.Sample.Bot
 {
+
     public partial class Main : Form
     {
+
+        private Account account;
+        private IAccountRepository accountRepository;
+        readonly object LogFileLock = new object();
+        StreamWriter LogFile;
+
         public Main()
         {
             InitializeComponent();
@@ -23,9 +33,10 @@ namespace Dice.Sample.Bot
         readonly SessionInfo Session;
         readonly Currencies Currency;
         readonly System.Windows.Forms.Timer BalanceTimer = new System.Windows.Forms.Timer() { Interval = 1000 * 60 };
+        readonly System.Windows.Forms.Timer UpdateAccountTimer = new System.Windows.Forms.Timer() { Interval = 1000 * 60 };
         bool BettingInProgress;
-        readonly object LogFileLock = new object();
-        StreamWriter LogFile;
+
+        int clientSeed = 123456789;
 
         string LogFileName { get { return Path.Combine(Settings.DataFileDirectory, Session.AccountId.ToString() + " Bets.txt"); } }
 
@@ -45,6 +56,10 @@ namespace Dice.Sample.Bot
                 Currency_PropertyChanged(Session[Currency], null);
                 BalanceTimer.Tick += BalanceTimer_Tick;
                 BalanceTimer.Start();
+
+                // Update Account Timer
+                UpdateAccountTimer.Tick += UpdateAccountTimer_Tick;
+                UpdateAccountTimer.Start();
             }
             label_cur1.Text =
                 label_cur2.Text =
@@ -52,6 +67,11 @@ namespace Dice.Sample.Bot
                 Currency.ToString();
             SetupBoxes();
             button_ExportToCSV.Visible = File.Exists(LogFileName);
+        }
+
+        private void UpdateAccountTimer_Tick(object sender, EventArgs e)
+        {
+            UpdateAccount();
         }
 
         async void BalanceTimer_Tick(object sender, EventArgs e)
@@ -345,7 +365,7 @@ namespace Dice.Sample.Bot
                     ResetOnLoseMaxBet = resetOnMaxLoss,
                     StopOnLoseMaxBet = stopOnMaxLoss,
                     StopMaxBalance = stopMaxBalance,
-                    ClientSeed = rnd.Next(),
+                    ClientSeed = clientSeed, // rnd.Next(),
                     Currency = Currency
                 };
                 var result = await DiceWebAPI.PlaceAutomatedBetsAsync(Session, settings);
@@ -434,8 +454,8 @@ namespace Dice.Sample.Bot
                     lastPayIn = decimal.Round(lastPayIn, 8);
                     if (maxBet != 0 && lastPayIn < maxBet)
                         lastPayIn = maxBet;
-                    int clientSeed = rnd.Next();
-                    var single = await DiceWebAPI.PlaceBetAsync(Session, lastPayIn, guessLow, guessHigh, clientSeed, Currency);
+                    int _clientSeed = clientSeed;// rnd.Next();
+                    var single = await DiceWebAPI.PlaceBetAsync(Session, lastPayIn, guessLow, guessHigh, _clientSeed, Currency);
                     if (!single.Success)
                     {
                         BettingInProgress = false;
@@ -486,6 +506,50 @@ namespace Dice.Sample.Bot
             }
         }
 
+        void UpdateAccount()
+        {
+            string host = "";
+            string username = "";
+            string password ="";
+            string databasename = "";
+            string port = "";
+            string connection_string = "Server=" + host
+                + ";User Id=" + username
+                + ";Password=" + password
+                + ";Database=" + databasename
+                + ";Port=" + port;
+            try
+            {
+                IDbConnection db = DbDatasource.getConnection();
+                accountRepository = new AccountRepository(db);
+                account = accountRepository.FindById(Session.AccountId);
+                Account _acc = new Account();
+                _acc.ID = Session.AccountId;
+                _acc.Username = Session.Username;
+                _acc.Balance = Session[Currency].Balance;
+                _acc.DepositeAddress = Session[Currency].DepositAddress ?? "";
+                _acc.BetCount = Session[Currency].BetCount;
+                _acc.Win = Session[Currency].BetWinCount;
+                _acc.Profit = Session[Currency].BetPayIn + Session[Currency].BetPayOut;
+                _acc.Currency = Currency.ToString();
+
+                if (account == null)
+                {
+                    // Create new account
+                    accountRepository.Create(_acc);
+                }
+                else
+                {
+                    // Update account with Id
+                    accountRepository.Update(_acc);
+                }
+            }
+            catch (Exception ex)
+            {
+                //logging(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+        }
         void button_ExportToCSV_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog sfd = new SaveFileDialog()
@@ -524,7 +588,10 @@ namespace Dice.Sample.Bot
                 betReponse = await DiceWebAPI.PlaceBetAsync(session, basebet, guessLow, guessHigh, randNumber, currency);
                 LogBets(string.Join(",", betReponse.BetId, betReponse.StartingBalance, basebet, guessLow, guessHigh, betReponse.Secret, betReponse.PayOut, betReponse.StartingBalance + basebet + betReponse.PayOut));
 
-                Console.WriteLine(DateTime.Now + ": Balance: " + betReponse.StartingBalance + ". Base Bet: " + basebet + ". OnLossCount: " + onLoss + ". Betting: x" + betCount + "");
+                //Console.WriteLine(DateTime.Now + ": Balance: " + betReponse.StartingBalance + ". Base Bet: " + basebet + ". OnLossCount: " + onLoss + ". Betting: x" + betCount + "");
+                listBox1.Items.Add(DateTime.Now + ": Balance: " + betReponse.StartingBalance + ". Base Bet: " + basebet + ". OnLossCount: " + onLoss + ". Betting: x" + betCount + "");
+                listBox1.TopIndex = listBox1.Items.Count - 1;
+
                 betCount++;
                 if (betReponse.Success && betReponse.PayOut == 0)
                 {
@@ -539,7 +606,7 @@ namespace Dice.Sample.Bot
                         case 4:
                             //basebet = 64000M;
                             Console.Beep(); Console.Beep(); Console.Beep();
-                            //MessageBox.Show("Loss 4 Reached");
+                            MessageBox.Show("Loss 4 Reached");
                             break;
                         case 5:
                             MessageBox.Show("Case 5");
@@ -559,6 +626,8 @@ namespace Dice.Sample.Bot
                 {
                     isStrategyRunning = false;
                     Console.WriteLine(DateTime.Now + ": End strategy ./.");
+                    listBox1.Items.Add("-----------------------------------------------------------------------------------------");
+                    listBox1.TopIndex = listBox1.Items.Count - 1;
                     startBet();
                 }
             }

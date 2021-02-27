@@ -58,7 +58,7 @@ namespace VerifyBetResult
             this.txtServerSeed.Name = "txtServerSeed";
             this.txtServerSeed.Size = new System.Drawing.Size(486, 22);
             this.txtServerSeed.TabIndex = 1;
-            this.txtServerSeed.Text = "a84bb8b7a1412b6a56fea1a4ea9375220121d85b475002fce064e35a871dbf93";
+            this.txtServerSeed.Text = "4c45e424ed2b247804e799df21b85c4bacf966a1fa94a7f46b09556e0ff1e694";
             // 
             // label2
             // 
@@ -75,7 +75,7 @@ namespace VerifyBetResult
             this.txtClientSeed.Name = "txtClientSeed";
             this.txtClientSeed.Size = new System.Drawing.Size(486, 22);
             this.txtClientSeed.TabIndex = 1;
-            this.txtClientSeed.Text = "579964599";
+            this.txtClientSeed.Text = "123123";
             // 
             // label3
             // 
@@ -109,7 +109,7 @@ namespace VerifyBetResult
             this.txtBetResult.Name = "txtBetResult";
             this.txtBetResult.Size = new System.Drawing.Size(486, 22);
             this.txtBetResult.TabIndex = 1;
-            this.txtBetResult.Text = "551933";
+            this.txtBetResult.Text = "892164";
             // 
             // btnCheck
             // 
@@ -146,7 +146,7 @@ namespace VerifyBetResult
             this.txtServerSeedHash.Name = "txtServerSeedHash";
             this.txtServerSeedHash.Size = new System.Drawing.Size(486, 22);
             this.txtServerSeedHash.TabIndex = 1;
-            this.txtServerSeedHash.Text = "0022f3ab7ff6b5160eb66451ba6cb9bb64ebfd89d4387d776e180d44520e0dc1";
+            this.txtServerSeedHash.Text = "0a392fe66536a23f3cea0ec0b5f6e10d456ea2bcf61c2460b716bc301a7b482a";
             // 
             // VerifyBetResultForm
             // 

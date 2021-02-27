@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dice.Sample.Bot", "DiceBot\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerifyBetResult", "VerifyBetResult\VerifyBetResult.csproj", "{AB056C51-F56B-43D0-8BB3-87E72A83CCDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataPresentationAnalysis", "DataPresentationAnalysis\DataPresentationAnalysis.csproj", "{6B660116-9F5A-498B-A26F-35D4159EC3FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPresentationAnalysis", "DataPresentationAnalysis\DataPresentationAnalysis.csproj", "{6B660116-9F5A-498B-A26F-35D4159EC3FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameGenerator", "NameGenerator\NameGenerator.csproj", "{5F6F00A2-3E67-499C-B826-31FCB40D7425}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,12 @@ Global
 		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B660116-9F5A-498B-A26F-35D4159EC3FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F6F00A2-3E67-499C-B826-31FCB40D7425}.Debug x64|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F6F00A2-3E67-499C-B826-31FCB40D7425}.Debug x64|Any CPU.Build.0 = Debug|Any CPU
+		{5F6F00A2-3E67-499C-B826-31FCB40D7425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F6F00A2-3E67-499C-B826-31FCB40D7425}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F6F00A2-3E67-499C-B826-31FCB40D7425}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F6F00A2-3E67-499C-B826-31FCB40D7425}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

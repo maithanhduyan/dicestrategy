@@ -14,9 +14,9 @@ namespace Dice.Sample.Bot
         // will be credited as referrals by you.
 
 #if DEBUG
-        public const string ApiKey = "861a6ff910d54607b5b5158a21f4c473";
+        public const string ApiKey = "07630a3a892944429aeaee68e76afedc";
 #else
-        public const string ApiKey = "CA3D5DCBAA8542B690086209B271B272";
+        public const string ApiKey = "07630a3a892944429aeaee68e76afedc";
 #endif
 
 

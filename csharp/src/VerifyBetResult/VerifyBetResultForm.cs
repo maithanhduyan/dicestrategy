@@ -27,6 +27,7 @@ namespace VerifyBetResult
             long betResult = long.Parse(txtBetResult.Text.Trim());
             string serverSeedHash = txtServerSeedHash.Text.Trim();
             bool fairBet = VerifyBetResult(serverSeed, clienSeed, betNumber, betResult, serverSeedHash);
+            CalculateBetResult(serverSeed, clienSeed);
             if (fairBet)
             {
                 MessageBox.Show("True");
@@ -45,8 +46,12 @@ namespace VerifyBetResult
                 .Select(x => byte.Parse(s.Substring(x * 2, 2), NumberStyles.HexNumber))
                 .ToArray();
             byte[] server = strtobytes(serverSeed);
-            Console.WriteLine(server.Length);
-            Console.WriteLine(server);
+            Console.WriteLine(server.ToString());
+            SHA256 sha256 = new SHA256Managed();
+            
+            String serverhashString = BitConverter.ToString(sha256.ComputeHash(server));
+            Console.WriteLine(serverhashString);
+
             byte[] client = BitConverter.GetBytes(clientSeed).Reverse().ToArray();
             byte[] num = BitConverter.GetBytes(betNumber).Reverse().ToArray();
             byte[] serverhash = serverSeedHash == null ? null : strtobytes(serverSeedHash);
@@ -54,25 +59,28 @@ namespace VerifyBetResult
             using (SHA512 sha512 = new SHA512Managed())
             {
                 if (serverhash != null)
-                    using (SHA256 sha256 = new SHA256Managed())
                         if (!sha256.ComputeHash(server).SequenceEqual(serverhash))
-                            throw new Exception("Server seed hash does not match server seed");
+                        //throw new Exception("Server seed hash does not match server seed");
+                        MessageBox.Show("Server seed hash does not match server seed");
                 byte[] hash = sha512.ComputeHash(sha512.ComputeHash(data));
+
+                Console.WriteLine(hash);
                 while (true)
                 {
                     for (int x = 0; x <= 61; x += 3)
                     {
                         long result = (hash[x] << 16) | (hash[x + 1] << 8) | hash[x + 2];
-                        if (result < 16000000)
-                            Console.WriteLine("" + (result % 1000000));
-                        return result % 1000000 == betResult;
+                        if (result < 16000000) { // Find a number < 16M
+                            Console.WriteLine("VerifyBetResult:" + (result % 1000000));
+                            return result % 1000000 == betResult;
+                        }
                     }
                     hash = sha512.ComputeHash(hash);
                 }
             }
         }
 
-        long CalculateBetResult(string serverSeed, int clientSeed)
+        async Task <long> CalculateBetResult(string serverSeed, int clientSeed)
         {
             Func<string, byte[]> strtobytes = s => Enumerable
                 .Range(0, s.Length / 2)
@@ -97,17 +105,19 @@ namespace VerifyBetResult
                     {
                         long result = (hash[x] << 16) | (hash[x + 1] << 8) | hash[x + 2];
                         if (result < 16000000)
-                            Console.WriteLine("Bet Result: " + (result % 1000000));
-                        return result % 1000000;
+                        {   // Find a number < 16M
+                            Console.WriteLine("CalculateBetResult: " + (result % 1000000));
+                            return (result % 1000000);
+                        }
                     }
                     hash = sha512.ComputeHash(hash);
                 }
             }
         }
 
-        private void lblCalculateBetResult_Click(object sender, EventArgs e)
+        private async void lblCalculateBetResult_Click(object sender, EventArgs e)
         {
-            long betResult = CalculateBetResult(txtServerSeed.Text.Trim(), int.Parse(txtClientSeed.Text.Trim()));
+            long betResult = await CalculateBetResult(txtServerSeed.Text.Trim(), int.Parse(txtClientSeed.Text.Trim()));
             lblCalculateBetResult.Text = "" + betResult;
         }
     }
