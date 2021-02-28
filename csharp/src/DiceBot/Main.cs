@@ -24,6 +24,8 @@ namespace Dice.Sample.Bot
         private IAccountRepository accountRepository;
         readonly object LogFileLock = new object();
         StreamWriter LogFile;
+        decimal maxbet  =0;
+        int maxloss = 0;
 
         public Main()
         {
@@ -625,14 +627,32 @@ namespace Dice.Sample.Bot
                 if (betCount == onRestart)
                 {
                     isStrategyRunning = false;
-                    Console.WriteLine(DateTime.Now + ": End strategy ./.");
+                    //Console.WriteLine(DateTime.Now + ": End strategy ./.");
                     listBox1.Items.Add("-----------------------------------------------------------------------------------------");
                     listBox1.TopIndex = listBox1.Items.Count - 1;
+                    maxbetRecorder(basebet, onLoss);
                     startBet();
                 }
             }
 
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+        }
+
+        void maxbetRecorder(decimal maxbet, int maxloss)
+        {
+            if (maxbet > this.maxbet) {
+                this.maxbet = maxbet;
+            }
+
+            if(maxloss > this.maxloss)
+            {
+                this.maxloss = maxloss;
+            }
+
+        }
     }
 }
